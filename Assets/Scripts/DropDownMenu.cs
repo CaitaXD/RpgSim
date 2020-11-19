@@ -1,23 +1,23 @@
 ﻿using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class DropDownMenu
 {
-    private float spacing = 75;
-    private Vector2 pivot = new Vector2(0.5f, 0.5f);
-    private Vector3 offset;
-    private Vector3 pos;
-    private GameObject preafab;
-    private Transform parent;
-    private int Items;
+    protected float spacing = 75;
+    protected Vector2 pivot = new Vector2(0.5f, 0.5f);
+    protected Vector3 offset;
+    protected Vector3 pos;
+    protected GameObject preafab;
+    protected Transform parent;
+    protected int items;
     public static Transform lastReference;
-    private DropDownMenu newMenu;
-
+    public DropDownMenu newMenu;
     public List<Transform> ReferenceList { get; private set; } = new List<Transform>();
-    //Constructors
+    protected DropDownMenu() 
+    {
+    }
     public DropDownMenu(GameObject _preafab, Transform _parent, int _Items)
     {
         Instantiate(_preafab, _parent, _Items, pivot, spacing);
@@ -30,13 +30,13 @@ public class DropDownMenu
     {
         Instantiate(_preafab, _parent, _Items, _pivot, _spacing);
     }
-    private void Instantiate(GameObject _preafab, Transform _parent, int _Items, Vector2 _pivot, float _spacing)
+    protected void Instantiate(GameObject _preafab, Transform _parent, int _Items, Vector2 _pivot, float _spacing)
     {
         preafab = _preafab;
         parent = _parent;
-        Items = _Items;
         spacing = _spacing;
         pivot = _pivot;
+        items = _Items;
         Vector3 pos = _parent.position;
         offset = new Vector3(0, -_spacing, 0);
         for (int i = 0; i < _Items; i++)
@@ -58,9 +58,6 @@ public class DropDownMenu
             else pos += offset;
         }
     }
-    //==============================================================================
-
-    //Delegation
     public void AddListeners(UnityAction action, Transform transform)
     {
         var button = transform.GetComponentInChildren<Button>();
@@ -76,11 +73,6 @@ public class DropDownMenu
             transform.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
         }
     }
-
-    //=============================================================================
-
-
-    //Trasformations 
     private void ChangeDropParent(Transform parent)
     {
         pos = parent.position;
@@ -184,6 +176,4 @@ public class DropDownMenu
             else pos += offset;
         }
     }
-
-    //==============================================================================
 }

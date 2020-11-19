@@ -8,7 +8,9 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 public class SearchEngine
 {
-    TMP_InputField inputField;List<string> results = new List<string>(); int increment = 0;
+    public TMP_InputField inputField { get;private set; }
+    List<string> results = new List<string>();
+    int increment = 0;
 
     public SearchEngine(TMP_InputField inputField)
     {

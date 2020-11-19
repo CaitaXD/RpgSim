@@ -5,7 +5,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-[Serializable]
 public class Entetie
 {
     private readonly List<string> FieldNames = new List<string>();
@@ -37,7 +36,6 @@ public class Entetie
         return gam;
     }
 }
-    [Serializable]
 public class EntetieList
 {
     public readonly List<Entetie> Entities = new List<Entetie>();
@@ -45,27 +43,29 @@ public class EntetieList
     private readonly List<List<string>> fieldsData = new List<List<string>>();
 
     public List<string> GetNames => fieldsData[0];
-    public EntetieList(List<List<string>> fieldNames, List<List<string>> fieldValues)
+    public EntetieList(string path)
     {
-        this.fieldsData.Add(new List<string>());
-        this.fieldNames.Add(new List<string>());
-        for (int y = 0; y < fieldValues[y].Count; y++)
+        Tuple<List<List<string>>, List<List<string>>> fields = CustomJsonDeserializer.DeserializeFromJson(path);
+        fieldsData.Add(new List<string>());
+        fieldNames.Add(new List<string>());
+
+        for (int y = 0; y < fields.Item2[y].Count; y++)
         {
-            for (int x = 0; x < fieldValues.Count; x++)
+            for (int x = 0; x < fields.Item2.Count; x++)
             {
-                Entities.Add(new Entetie(fieldNames[x], fieldValues[x]));
-                if (this.fieldsData.Count <= x)
+                Entities.Add(new Entetie(fields.Item1[x], fields.Item2[x]));
+                if (fieldsData.Count <= x)
                 {
-                    this.fieldsData.Add(new List<string>());
-                    this.fieldNames.Add(new List<string>());
+                    fieldsData.Add(new List<string>());
+                    fieldNames.Add(new List<string>());
                 }
-                if (fieldValues[x].Count > y)
+                if (fields.Item2[x].Count > y)
                 {
-                    this.fieldsData[y].Add(fieldValues[x][y]);
+                    fieldsData[y].Add(fields.Item2[x][y]);
                 }
-                if(fieldNames[x].Count > y)
+                if(fields.Item1[x].Count > y)
                 {
-                    this.fieldNames[y].Add(fieldNames[x][y]);
+                    fieldNames[y].Add(fields.Item1[x][y]);
                 }
             }
         }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -11,9 +12,10 @@ public class LeftMenuUI : MonoBehaviour
     public Vector2 pivot;
     [SerializeField] float spacing;
     [SerializeField] TMP_InputField inputfield;
-    [SerializeField] string[] texts;
+    [SerializeField] int items;
 
     DropDownMenu resultsMenu;
+    DropDownMenu expandedMenu;
     SearchEngine SearchEngine;
     EntetieList monsterManual;
 
@@ -23,19 +25,24 @@ public class LeftMenuUI : MonoBehaviour
 
     private void Awake()
     {
-        monsterManual = Commands.LoadMonsterManual();
+        monsterManual = LoadMonsterManual(@"Assets\ExternalData\5emonsters.json");
         SearchEngine = new SearchEngine(inputfield);
-        resultsMenu = new DropDownMenu(prefab, parent, texts, pivot, spacing);
+        resultsMenu = new DropDownMenu(prefab, parent, items, pivot, spacing);
 
         OnInputValue(delegate { SearchEngine.Search(monsterManual.GetNames);});
         OnInputValue(delegate { PrintResults(resultsMenu, SearchEngine.GetResults());});
 
-        ShowOptions(monsterManual, resultsMenu);       
+        DelegateExpandButtons();
     }
     private void Update()
     {
         SearchEngine.RollResultsIndex(resultsMenu.GetTexts());
         InputHandler();
+        if (!ClosePopUpReferenceList.Contains(expandedMenu) && expandedMenu != null)
+        {
+            ClosePopUpReferenceList.Add(expandedMenu);
+            DelegateAddEntetieToGridButton(0, "Add");
+        }
     }
     private void PrintResults(DropDownMenu menu, List<string> SearchResults)
     {
@@ -72,25 +79,34 @@ public class LeftMenuUI : MonoBehaviour
     {
         inputfield.onValueChanged.AddListener(delegate { unityaction(); });
     }
-    private void ShowOptions(EntetieList entetieList, DropDownMenu menu)
+    private void DelegateExpandButtons()
     {
-        texts = new string[3];
-        texts[0] = "Add";
-        texts[1] = "Edit";
-        texts[2] = "Remove";
-        for (int i = 0; i < menu.ReferenceList.Count; i++)
+        for (int i = 0; i < resultsMenu.ReferenceList.Count; i++)
         {
             int x = i;
-            var reference = menu.ReferenceList[x];
+            var reference = resultsMenu.ReferenceList[x];
             var referenceText = reference.GetComponentInChildren<Text>();
-            menu.AddListeners(delegate {
-                var expandedMenu = menu.Expand(reference, texts);
-                var addEntetieButton = expandedMenu.ReferenceList[0].GetComponentInChildren<Button>();
-                var entetie = entetieList.Entities.Find(thing => thing.GetName == referenceText.text);
-
-                addEntetieButton.onClick.RemoveAllListeners();
-                addEntetieButton.onClick.AddListener(delegate { entetie.Intantiate(); });
+            resultsMenu.AddListeners(delegate {expandedMenu = resultsMenu.Expand(reference, 3);
             }, reference);
         }
     }
+    private void DelegateAddEntetieToGridButton(int index, string text)
+    {
+        var addEntetieButton = expandedMenu.ReferenceList[index];
+
+        addEntetieButton.GetComponentInChildren<Text>().text = text;
+        expandedMenu.AddListeners(delegate
+        {
+            var entetie = monsterManual.Entities.Find(x => x.GetName == addEntetieButton.parent.GetComponentInChildren<Text>().text);
+            entetie.Intantiate();
+
+        }, addEntetieButton);
+    }
+    private EntetieList LoadMonsterManual(string path)
+    {
+        Tuple<List<List<string>>, List<List<string>>> data = CustomJsonDeserializer.DeserializeFromJson(path);
+        EntetieList monsterManual = new EntetieList(data.Item1, data.Item2);
+        return monsterManual;
+    }
 }
+

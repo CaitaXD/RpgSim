@@ -5,9 +5,9 @@ using UnityEngine.Events;
 
 public static class Commands
 {
-    public static EntetieList LoadMonsterManual()
+    public static EntetieList LoadMonsterManual(string path)
     {
-        Tuple<List<List<string>>,List<List<string>>> data = CustomJsonDeserializer.DeserializeFromJson(@"Assets\ExternalData\5emonsters.json");
+        Tuple<List<List<string>>,List<List<string>>> data = CustomJsonDeserializer.DeserializeFromJson(path);
         EntetieList monsterManual = new EntetieList(data.Item1,data.Item2);
         return monsterManual;
     }

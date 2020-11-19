@@ -12,25 +12,25 @@ public class DropDownMenu
     private Vector3 pos;
     private GameObject preafab;
     private Transform parent;
-    private string[] Items;
+    private int Items;
     public static Transform lastReference;
     private DropDownMenu newMenu;
 
     public List<Transform> ReferenceList { get; private set; } = new List<Transform>();
     //Constructors
-    public DropDownMenu(GameObject _preafab, Transform _parent, string[] _Items)
+    public DropDownMenu(GameObject _preafab, Transform _parent, int _Items)
     {
         Instantiate(_preafab, _parent, _Items, pivot, spacing);
     }
-    public DropDownMenu(GameObject _preafab, Transform _parent, string[] _Items, Vector2 _pivot)
+    public DropDownMenu(GameObject _preafab, Transform _parent, int _Items, Vector2 _pivot)
     {
         Instantiate(_preafab, _parent, _Items, _pivot, spacing);
     }
-    public DropDownMenu(GameObject _preafab, Transform _parent, string[] _Items, Vector2 _pivot, float _spacing)
+    public DropDownMenu(GameObject _preafab, Transform _parent, int _Items, Vector2 _pivot, float _spacing)
     {
         Instantiate(_preafab, _parent, _Items, _pivot, _spacing);
     }
-    private void Instantiate(GameObject _preafab, Transform _parent, string[] _Items, Vector2 _pivot, float _spacing)
+    private void Instantiate(GameObject _preafab, Transform _parent, int _Items, Vector2 _pivot, float _spacing)
     {
         preafab = _preafab;
         parent = _parent;
@@ -39,20 +39,19 @@ public class DropDownMenu
         pivot = _pivot;
         Vector3 pos = _parent.position;
         offset = new Vector3(0, -_spacing, 0);
-        for (int i = 0; i < _Items.Length; i++)
+        for (int i = 0; i < _Items; i++)
         {
             offset = new Vector3(0, -_spacing, 0);
             var gam = GameObject.Instantiate(_preafab);
             gam.transform.SetParent(_parent);
             gam.transform.position = pos;
-            gam.GetComponentInChildren<Text>().text = Items[i];
             ReferenceList.Add(gam.transform);
             gam.GetComponent<RectTransform>().pivot = _pivot;
             offset.y /= gam.transform.localScale.y;
             gam.transform.localScale = new Vector3(1, 1, 1);
             if (Camera.main.WorldToScreenPoint(gam.transform.position).y < Screen.height)
             {
-                pos -= offset * _Items.Length;
+                pos -= offset * _Items;
                 gam.transform.position = pos;
                 pos += offset;
             }
@@ -143,7 +142,7 @@ public class DropDownMenu
         }
         return texts;
     }
-    public DropDownMenu Expand(Transform parent, string[] Items)
+    public DropDownMenu Expand(Transform parent, int Items)
     {
 
         var isThisLastReference = lastReference == null;

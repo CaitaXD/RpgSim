@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class EntetieScript : MonoBehaviour
 {
     float timer;
     public Entetie Entetie;
-    private string[] ShowInfo = new string[4];
+    private int items;
     private DropDownMenu infoMenu;
     UnityAction State;
     private void Awake()
@@ -76,20 +77,17 @@ public class EntetieScript : MonoBehaviour
                     var pos = Input.mousePosition;
                     if (infoMenu == null)
                     {
-                        ShowInfo[0] = Entetie.GetName;
-                        ShowInfo[1] = "Hit Points: Null/Null";
-                        ShowInfo[2] = "State: Null";
-                        ShowInfo[3] = "Remove";
-
                         var uiNav = GameObject.Find("Canvas").GetComponent<LeftMenuUI>();
                         var offSettedPivot = new Vector2((uiNav.pivot.x - 1) * (-1), uiNav.pivot.y);
 
-                        infoMenu = new DropDownMenu(uiNav.prefab, uiNav.parent, ShowInfo, offSettedPivot, 75);
+                        infoMenu = new DropDownMenu(uiNav.prefab, uiNav.parent,items, offSettedPivot, 75);
                         infoMenu.SetPosition(pos);
+
+                        DelegateDestroyerButtom(3, "Remove");
 
                         LeftMenuUI.ClosePopUpReferenceList.Add(infoMenu);
 
-                        AddListeners(infoMenu);
+                        DelegateMenuActions();
                     }
                     else if (infoMenu != null && !infoMenu.ReferenceList[0].gameObject.activeInHierarchy)
                     {
@@ -103,20 +101,18 @@ public class EntetieScript : MonoBehaviour
             }
         }        
     }
-    private void AddListeners(DropDownMenu menu)
+    private void DelegateMenuActions()
     {
-        foreach (var _Text in menu.GetTexts())
+        
+    }
+    private void DelegateDestroyerButtom(int index, string text)
+    {
+        var buttonReference = infoMenu.ReferenceList[index];
+        buttonReference.GetComponentInChildren<Text>().text = text;
+        infoMenu.AddListeners(delegate
         {
-            switch (_Text.text)
-            {
-                case "Remove":
-                    menu.AddListeners(
-                        delegate {
-                            menu.Destroy();
-                            GameObject.Destroy(gameObject);
-                        },_Text.transform);
-                    break;
-            }
-        }
+            Destroy(gameObject);
+            infoMenu.Destroy();
+        }, buttonReference);
     }
 }

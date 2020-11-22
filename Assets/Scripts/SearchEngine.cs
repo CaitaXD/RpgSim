@@ -28,7 +28,7 @@ public class SearchEngine
         }
         return results;
     }
-    public void RollResultsIndex(List<Text> _Texts)
+    public void RollResults(List<Text> _Texts)
     {
         if (results.Count > _Texts.Count)
         {

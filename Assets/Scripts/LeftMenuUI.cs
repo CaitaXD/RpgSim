@@ -19,31 +19,27 @@ public class LeftMenuUI : MonoBehaviour
     EntetieList monsterManual;
 
     //ToDo: pass the static variables to a UI parent Class when said class is implemented
-    static public List<DropDownMenu> ClosePopUpReferenceList = new List<DropDownMenu>();
+    static public List<DropDownMenu> TempMenusRef = new List<DropDownMenu>();
     static public bool isPointerDraggin = false;
 
     private void Awake()
     {
         monsterManual = new EntetieList(@"Assets\ExternalData\5emonsters.json");
-
         SearchEngine = new SearchEngine(inputfield);
-
         resultsMenu = new ResultsMenu(prefab, parent, items, pivot, spacing);
-
-        resultsMenu.SearchOnValueChanged(SearchEngine, monsterManual);
-
-        resultsMenu.PrintResultsOnValuechanged();
-
-        resultsMenu.DelegateResults();
+        ResultsMenuRotine(resultsMenu);
+        
     }
     private void Update()
     {
-        SearchEngine.RollResultsIndex(resultsMenu.GetTexts());
+        SearchEngine.RollResults(resultsMenu.GetTexts());
         InputHandler();
-        if (!ClosePopUpReferenceList.Contains(resultsMenu.newMenu) && resultsMenu.newMenu != null)
+        var menuNotCalled = !TempMenusRef.Contains(resultsMenu.newMenu);
+        var menuNotNull = resultsMenu.newMenu != null;
+        if (menuNotCalled && menuNotNull)
         {
-            ClosePopUpReferenceList.Add(resultsMenu.newMenu);
-            DelegateAddEntetieToGridButton(0, "Add");
+            TempMenusRef.Add(resultsMenu.newMenu);
+            AddEntetieButton(0, "Add");
         }
     }
     private void InputHandler()
@@ -65,7 +61,7 @@ public class LeftMenuUI : MonoBehaviour
             Commands.ClearPopUps();
         }
     }
-    private void DelegateAddEntetieToGridButton(int index, string text)
+    private void AddEntetieButton(int index, string text)
     {
         var addEntetieButton = resultsMenu.newMenu.ReferenceList[index];
         addEntetieButton.GetComponentInChildren<Text>().text = text;
@@ -76,5 +72,12 @@ public class LeftMenuUI : MonoBehaviour
 
         }, addEntetieButton);
     }
+    private void ResultsMenuRotine(ResultsMenu menu)
+    {
+        menu.SearchOnValueChanged(SearchEngine, monsterManual);
+        menu.PrintResultsOnValuechanged();
+        menu.DelegateResults();
+    }
 }
+
 

@@ -80,14 +80,12 @@ public class EntetieScript : MonoBehaviour
                         var uiNav = GameObject.Find("Canvas").GetComponent<LeftMenuUI>();
                         var offSettedPivot = new Vector2((uiNav.pivot.x - 1) * (-1), uiNav.pivot.y);
 
-                        infoMenu = new DropDownMenu(uiNav.prefab, uiNav.parent,items, offSettedPivot, 75);
+                        infoMenu = new DropDownMenu(uiNav.prefab, uiNav.parent,3, offSettedPivot, 75);
                         infoMenu.SetPosition(pos);
 
-                        DelegateDestroyerButtom(3, "Remove");
+                        DelegateDestroyerButtom(2, "Remove");
 
-                        LeftMenuUI.ClosePopUpReferenceList.Add(infoMenu);
-
-                        DelegateMenuActions();
+                        LeftMenuUI.TempMenusRef.Add(infoMenu);
                     }
                     else if (infoMenu != null && !infoMenu.ReferenceList[0].gameObject.activeInHierarchy)
                     {
@@ -100,10 +98,6 @@ public class EntetieScript : MonoBehaviour
                 }            
             }
         }        
-    }
-    private void DelegateMenuActions()
-    {
-        
     }
     private void DelegateDestroyerButtom(int index, string text)
     {

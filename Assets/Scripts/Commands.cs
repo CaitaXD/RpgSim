@@ -13,13 +13,11 @@ public static class Commands
         xy.Raycast(ray, out distance);
         return ray.GetPoint(distance);
     }
-    //==========================================================================================================
     public static void ClearPopUps()
     {
-        foreach (var popUp in LeftMenuUI.ClosePopUpReferenceList)
+        foreach (var popUp in LeftMenuUI.TempMenusRef)
         {
             if(popUp != null)popUp.Disable();
         }
     }
-    //===========================================================================================================
 }

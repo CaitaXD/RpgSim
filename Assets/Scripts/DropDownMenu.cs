@@ -73,7 +73,7 @@ public class DropDownMenu
             transform.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
         }
     }
-    private void ChangeDropParent(Transform parent)
+    public void ChangeDropParent(Transform parent)
     {
         pos = parent.position;
         foreach (var transform in ReferenceList)
@@ -136,7 +136,6 @@ public class DropDownMenu
     }
     public DropDownMenu Expand(Transform parent, int Items)
     {
-
         var isThisLastReference = lastReference == null;
         var sameReferenceCalled = parent == lastReference;
         lastReference = parent;

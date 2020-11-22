@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
+
 public class ResultsMenu : DropDownMenu
 {
     private SearchEngine searchEngine;
-
     public ResultsMenu(GameObject _preafab, Transform _parent, int _Items)
     {
         Instantiate(_preafab, _parent, _Items, pivot, spacing);
@@ -47,6 +48,7 @@ public class ResultsMenu : DropDownMenu
             int x = i;
             var reference = ReferenceList[x];
             AddListeners(delegate {
+                if(reference.GetComponentInChildren<Text>().text != "")
                 newMenu = Expand(reference, 3);
             }, reference);
         }

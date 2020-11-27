@@ -11,7 +11,9 @@ public static class CustomJsonDeserializer
     {
         List<List<string>> FieldName = new List<List<string>>(); List<List<string>> FieldData = new List<List<string>>();
         List<List<string>> Results = new List<List<string>>();
-        var jObject = JObject.Parse(File.ReadAllText(path));
+        var txtData = Resources.Load("5emonsters") as TextAsset;
+        var textString = txtData.ToString();
+        var jObject = JObject.Parse(textString);
         string jString = jObject.ToString();
         string[] recipient;
         List<string> fieldName = new List<string>();

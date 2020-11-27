@@ -4,17 +4,17 @@ using UnityEngine.UI;
 public class ResultsMenu : DropDownMenu
 {
     private SearchEngine searchEngine;
-    public ResultsMenu(GameObject _preafab, Transform _parent, int _Items)
+    public ResultsMenu(GameObject preafab, Transform parent, int items)
     {
-        Instantiate(_preafab, _parent, _Items, pivot, spacing);
+        Instantiate(preafab, parent, items, _pivot, _spacing);
     }
-    public ResultsMenu(GameObject _preafab, Transform _parent, int _Items, Vector2 _pivot)
+    public ResultsMenu(GameObject preafab, Transform parent, int items, Vector2 pivot)
     {
-        Instantiate(_preafab, _parent, _Items, _pivot, spacing);
+        Instantiate(preafab, parent, items, pivot, _spacing);
     }
-    public ResultsMenu(GameObject _preafab, Transform _parent, int _Items, Vector2 _pivot, float _spacing)
+    public ResultsMenu(GameObject preafab, Transform parent, int items, Vector2 pivot, float spacing)
     {
-        Instantiate(_preafab, _parent, _Items, _pivot, _spacing);
+        Instantiate(preafab, parent, items, pivot, spacing);
     }
     public void SearchOnValueChanged(SearchEngine searchEngine , EntetieList entetieList)
     {
@@ -36,7 +36,7 @@ public class ResultsMenu : DropDownMenu
             {
                 foreach (var Text in GetTexts())
                     Text.text = "";
-                for (int i = 0; i < items && i < searchEngine.GetResults().Count; i++)
+                for (int i = 0; i < _items && i < searchEngine.GetResults().Count; i++)
                     GetTexts()[i].text = searchEngine.GetResults()[i];
             });
         }

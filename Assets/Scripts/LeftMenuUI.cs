@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 public class LeftMenuUI : MonoBehaviour
 {
@@ -14,9 +12,9 @@ public class LeftMenuUI : MonoBehaviour
     [SerializeField] TMP_InputField inputfield;
     [SerializeField] int items;
 
-    ResultsMenu resultsMenu;
-    SearchEngine SearchEngine;
-    EntetieList monsterManual;
+    private ResultsMenu resultsMenu;
+    private SearchEngine SearchEngine;
+    private EntetieList monsterManual;
 
     //ToDo: pass the static variables to a UI parent Class when said class is implemented
     static public List<DropDownMenu> TempMenusRef = new List<DropDownMenu>();
@@ -24,11 +22,10 @@ public class LeftMenuUI : MonoBehaviour
 
     private void Awake()
     {
-        monsterManual = new EntetieList(@"Assets\ExternalData\5emonsters.json");
+        monsterManual = new EntetieList(@"Assets\Resources\5emonsters.json");
         SearchEngine = new SearchEngine(inputfield);
         resultsMenu = new ResultsMenu(prefab, parent, items, pivot, spacing);
-        ResultsMenuRotine(resultsMenu);
-        
+        ResultsMenuRotine(resultsMenu);      
     }
     private void Update()
     {

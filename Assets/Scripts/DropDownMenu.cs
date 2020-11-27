@@ -1,61 +1,62 @@
 ﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class DropDownMenu
 {
-    protected float spacing = 75;
-    protected Vector2 pivot = new Vector2(0.5f, 0.5f);
-    protected Vector3 offset;
-    protected Vector3 pos;
-    protected GameObject preafab;
-    protected Transform parent;
-    protected int items;
+    protected float _spacing = 75;
+    protected Vector2 _pivot = new Vector2(0.5f, 0.5f);
+    protected Vector3 _offset;
+    protected Vector3 _pos;
+    protected GameObject _preafab;
+    protected Transform _parent;
+    protected int _items;
     public static Transform lastReference;
     public DropDownMenu newMenu;
     public List<Transform> ReferenceList { get; private set; } = new List<Transform>();
     protected DropDownMenu() 
     {
     }
-    public DropDownMenu(GameObject _preafab, Transform _parent, int _Items)
+    public DropDownMenu(GameObject preafab, Transform parent, int items)
     {
-        Instantiate(_preafab, _parent, _Items, pivot, spacing);
+        Instantiate(preafab, parent, items, _pivot, _spacing);
     }
-    public DropDownMenu(GameObject _preafab, Transform _parent, int _Items, Vector2 _pivot)
+    public DropDownMenu(GameObject preafab, Transform parent, int items, Vector2 pivot)
     {
-        Instantiate(_preafab, _parent, _Items, _pivot, spacing);
+        Instantiate(preafab, parent, items, pivot, _spacing);
     }
-    public DropDownMenu(GameObject _preafab, Transform _parent, int _Items, Vector2 _pivot, float _spacing)
+    public DropDownMenu(GameObject preafab, Transform parent, int items, Vector2 pivot, float spacing)
     {
-        Instantiate(_preafab, _parent, _Items, _pivot, _spacing);
+        Instantiate(preafab, parent, items, pivot, spacing);
     }
-    protected void Instantiate(GameObject _preafab, Transform _parent, int _Items, Vector2 _pivot, float _spacing)
+    protected void Instantiate(GameObject preafab, Transform parent, int items, Vector2 pivot, float spacing)
     {
-        preafab = _preafab;
-        parent = _parent;
-        spacing = _spacing;
-        pivot = _pivot;
-        items = _Items;
-        Vector3 pos = _parent.position;
-        offset = new Vector3(0, -_spacing, 0);
-        for (int i = 0; i < _Items; i++)
+        _preafab = preafab;
+        _parent = parent;
+        _spacing = spacing;
+        _pivot = pivot;
+        _items = items;
+        Vector3 pos = parent.position;
+        _offset = new Vector3(0, -spacing, 0);
+        for (int i = 0; i < items; i++)
         {
-            offset = new Vector3(0, -_spacing, 0);
+            _offset = new Vector3(0, -spacing, 0);
             var gam = GameObject.Instantiate(_preafab);
-            gam.transform.SetParent(_parent);
+            gam.transform.SetParent(parent);
             gam.transform.position = pos;
             ReferenceList.Add(gam.transform);
-            gam.GetComponent<RectTransform>().pivot = _pivot;
-            offset.y /= gam.transform.localScale.y;
+            gam.GetComponent<RectTransform>().pivot = pivot;
+            _offset.y /= gam.transform.localScale.y;
             gam.transform.localScale = new Vector3(1, 1, 1);
             if (Camera.main.WorldToScreenPoint(gam.transform.position).y < Screen.height)
             {
-                pos -= offset * _Items;
+                pos -= _offset * items;
                 gam.transform.position = pos;
-                pos += offset;
+                pos += _offset;
             }
-            else pos += offset;
+            else pos += _offset;
         }
     }
     public void AddListeners(UnityAction action, Transform transform)
@@ -75,7 +76,7 @@ public class DropDownMenu
     }
     public void ChangeDropParent(Transform parent)
     {
-        pos = parent.position;
+        _pos = parent.position;
         foreach (var transform in ReferenceList)
         {
             if (transform.gameObject.activeInHierarchy == false)
@@ -84,13 +85,13 @@ public class DropDownMenu
             }
             transform.SetParent(parent);
             transform.localScale = Vector3.one;
-            transform.position = pos;
+            transform.position = _pos;
             if (Camera.main.WorldToScreenPoint(transform.position).y < Screen.height)
             {
-                pos -= offset * ReferenceList.Count;
-                transform.position = pos;
-                pos += offset;
-            } else pos += offset;
+                _pos -= _offset * ReferenceList.Count;
+                transform.position = _pos;
+                _pos += _offset;
+            } else _pos += _offset;
         }
     }
     public void EnableDisable()
@@ -142,7 +143,7 @@ public class DropDownMenu
 
         if (isThisLastReference && !sameReferenceCalled)
         {
-          return newMenu = new DropDownMenu(preafab, parent, Items, new Vector2((pivot.x - 1) * (-1), pivot.y), spacing);
+          return newMenu = new DropDownMenu(_preafab, parent, Items, new Vector2((_pivot.x - 1) * (-1), _pivot.y), _spacing);
         }
         else if (!isThisLastReference && sameReferenceCalled)
         {
@@ -168,11 +169,11 @@ public class DropDownMenu
             transform.position = pos;
             if (Camera.main.WorldToScreenPoint(transform.position).y < Screen.height)
             {
-                pos -= offset * ReferenceList.Count;
+                pos -= _offset * ReferenceList.Count;
                 transform.position = pos;
-                pos += offset;
+                pos += _offset;
             }
-            else pos += offset;
+            else pos += _offset;
         }
     }
 }

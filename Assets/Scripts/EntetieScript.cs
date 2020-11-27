@@ -4,11 +4,11 @@ using UnityEngine.UI;
 
 public class EntetieScript : MonoBehaviour
 {
-    float timer;
     public Entetie Entetie;
     private int items;
+    private float timer;
     private DropDownMenu infoMenu;
-    UnityAction State;
+    private UnityAction State;
     private void Awake()
     {
         State = MovingState;
@@ -77,7 +77,7 @@ public class EntetieScript : MonoBehaviour
                     var pos = Input.mousePosition;
                     if (infoMenu == null)
                     {
-                        var uiNav = GameObject.Find("Canvas").GetComponent<LeftMenuUI>();
+                        var uiNav = GameObject.Find("Canvas").GetComponentInChildren<LeftMenuUI>();
                         var offSettedPivot = new Vector2((uiNav.pivot.x - 1) * (-1), uiNav.pivot.y);
 
                         infoMenu = new DropDownMenu(uiNav.prefab, uiNav.parent,3, offSettedPivot, 75);

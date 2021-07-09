@@ -12,6 +12,7 @@ public class SelectionScript : MonoBehaviour
     [SerializeField] BoxSelector BoxSelector;
     Vector3 initMousePos;
     Vector3 DragPos;
+    static int count = 0;
     public GameObject SelectionGUI() => Instantiate(SelectinGUIPrefab, Vector3.zero, Quaternion.identity, GameObject.Find("Canvas").transform);
     public static bool AnySelectedEntetieNotIdle()  =>  SelectedEnteties.Any(x => x.GetState().GetType() != typeof(IdleState));
     float timer;
@@ -34,7 +35,7 @@ public class SelectionScript : MonoBehaviour
         if (Input.GetMouseButton(0))
         {
             timer += Time.deltaTime;
-            if (timer > timeFrame) UnsellectAll();
+            if (timer > timeFrame && !Input.GetKey(KeyCode.LeftShift)) UnsellectAll();
             RaycastHit hit;
             ray = _myCam.ScreenPointToRay(Input.mousePosition);
             Physics.Raycast(ray, out hit);
@@ -58,7 +59,7 @@ public class SelectionScript : MonoBehaviour
                 if (enteteiScript != null)
                 {
                     if (firstOccurence < 0) firstOccurence = i;
-                    if (firstOccurence >= i) UnsellectAll();        
+                    if (firstOccurence >= i && !Input.GetKey(KeyCode.LeftShift)) UnsellectAll();        
                     Select(enteteiScript);
                 }
             }
@@ -161,6 +162,15 @@ public class SelectionScript : MonoBehaviour
             max = Vector2.Max(max, v);
         }
        return new Rect(min.x, min.y, max.x - min.x, max.y - min.y);
+    }
+    public static void HandleNextMove()
+    {
+        if(count < SelectedEnteties.Count -1)
+        {
+            EntetieScript first = SelectedEnteties[0];
+            first.SetState(new WalkingState(first));
+            count++;
+        } else count = 0;        
     }
 }
 

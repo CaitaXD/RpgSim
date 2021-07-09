@@ -66,4 +66,14 @@ public static class EntetieManager
         number = int.Parse(str);
         return number;
     }
+    public static Transform Target(EntetieScript entetie, Camera myCam)
+    {
+        RaycastHit hit;
+        Ray ray = myCam.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out hit))
+        {
+            return hit.transform;
+        }
+        return null;
+    }
 }

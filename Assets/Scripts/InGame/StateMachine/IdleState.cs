@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class IdleState : State
 {
+    public Transform currentTarget;
     public bool wasRayCasted;
     public IdleState(EntetieScript entetieScript) : base(entetieScript)
     {
@@ -24,6 +25,18 @@ public class IdleState : State
                 KeyCode.D,  delegate
                 {
                     EntetieManager.AlterFieldValue(entetieScript, "HitPoints", -1);
+                }
+            },
+            { 
+                KeyCode.T,  delegate
+                {
+                    currentTarget = EntetieManager.Target(entetieScript, Camera.main);
+                }
+            },
+            { 
+                KeyCode.Escape,  delegate
+                {
+                    currentTarget = null;
                 }
             }
         };

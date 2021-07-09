@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -32,14 +33,27 @@ public class WalkingState : State
     }
     public override IEnumerator Start()
     {
-        EntetieSearchUI.isPointerDraggin = true;
         walkingSpeed = GetAtrtibuteValue(attribute) /5;
+        KeyBinds = new Dictionary<KeyCode, Action>()
+        {
+            { 
+                KeyCode.Escape,  delegate
+                {
+                    entetieScript.HighLightGridCircle(initPos, walkingSpeed, Color.white);
+                    SelectionScript.SetNextEntetieToFirstIndex(entetieScript);
+                    CancelMovement(initPos);
+                    SelectionScript.HandleNextMove();
+                }
+            }
+        };
+        EntetieSearchUI.isPointerDraggin = true;
         initPos = entetieScript.transform.position;
         entetieScript.HighLightGridCircle(initPos, walkingSpeed, Color.green);
         yield break;
     }
     public override void Update()
-    {
+    {       
+        HanldeInput();
         SetDestination(walkingSpeed, initPos);
         WalkToDestination();
     }
@@ -53,6 +67,7 @@ public class WalkingState : State
             if (Vector3.Distance(entetieScript.transform.position, destination) == 0)
             {
                 Place();
+                SelectionScript.HandleNextMove();
                 return;
             }
         }

@@ -1,111 +1,123 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class EntetieScript : MonoBehaviour
+public class EntetieScript : EntetieStateMachine
 {
     public Entetie Entetie;
-    private int items;
-    private float timer;
+    public Dictionary<string,string> fields = new Dictionary<string, string>();
     private DropList infoMenu;
-    private UnityAction State;
     public GameObject prefab;
     public Transform parent;
     public Vector2 pivot;
-
+    public Testing Testing;
+    public bool SelectedCurrently;
+    public GameObject SelectionGUI;
+    bool isAlive = true;
+    public bool IsAlive() { if(Health <= 0) return isAlive = false; else return isAlive = true;}
+    public int Health;
+    public int optionsAmount = 3;
     private void Awake()
     {
+        Testing = GameObject.Find("Scripts").GetComponent<Testing>();
         parent = parent ? parent : GameObject.Find("Canvas").GetComponent<Transform>();
-        prefab = prefab ? prefab : Resources.Load("Prefabs/UiText") as GameObject;
-        State = MovingState;
+        prefab = prefab ? prefab : Resources.Load("Prefabs/Ui/UiText") as GameObject;
+        SetState(new DraggingState(this));
+    }
+    void Start()
+    {
+        foreach(var kvp in Entetie.fields)
+        {
+            fields.Add(kvp.Key, kvp.Value);
+        } 
+    }
+    public static int GetAtrtibuteValue(string attribute)
+    {
+        List<char> numbers = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-'};
+        int number = 0;
+        string str = "";
+        string[] speeds = attribute.Split(new string[] { "," }, System.StringSplitOptions.RemoveEmptyEntries);
+        speeds = attribute.Split(new string[] { "(" }, System.StringSplitOptions.RemoveEmptyEntries);
+        for (int i = 0; i < speeds[0].Length; i++)
+        {
+            if (numbers.Contains(speeds[0][i]))
+            {
+                str = str + speeds[0][i];
+            }
+        }
+        number = int.Parse(str);
+        return number;
     }
     private void Update()
     {
-        State();
+        Health = GetAtrtibuteValue(fields["HitPoints"]);
+        State.Update();
     }
-    private void MovingState()
+    public void ShowInteractions()
     {
-        gameObject.layer = 2;
-        LeftMenuUI.isPointerDraggin = true;
-        RaycastHit hit;
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if(Physics.Raycast(ray, out hit))
+        var pos = Input.mousePosition;
+        if (infoMenu == null)
         {
-            transform.position = hit.transform.position;
-            if (Input.GetMouseButtonDown(0) && LeftMenuUI.isPointerDraggin)
-            {
-                if (hit.transform.name == "Tile")
-                {
-                    State = LockedState;
-                    LeftMenuUI.isPointerDraggin = false;
-                }
-                gameObject.layer = 0;
-            }
-            if(Input.GetMouseButtonUp(0) && timer > 0.25f)
-            {
-                if (hit.transform.name == "Tile")
-                {
-                    State = LockedState;
-                    LeftMenuUI.isPointerDraggin = false;
-                    timer = 0;
-                    gameObject.layer = 0;
-                }
-            }
+            var offSettedPivot = new Vector2((pivot.x - 1) * (-1), pivot.y);
+            infoMenu = new DropList(prefab, parent, optionsAmount, offSettedPivot, 20);
+            infoMenu.SetPosition(pos);
+            InstntiateRemoveButton(2, "Remove");
+            InstantiateMoveButton(0, "Move");
+            InstantiateRollButton(1, "Roll");
+            EntetieSearchUI.DropListTracker.Add(infoMenu);
         }
+        if (infoMenu.IsActive())
+            infoMenu.EnableDisable();
+        if (!infoMenu.IsActive())
+            infoMenu.SetPosition(pos);
     }
-    private void OnMouseDrag()
+    public void MoveEntetie(Vector3 position)
     {
-        timer += Time.deltaTime;
+        transform.position = position;
     }
-    private void LockedState()
+    private Vector3 WorldPositionToGrid(Vector3 WorldPos, float MultiplicativeConstant, Vector3 AdditiveCosntant)
     {
-        if (Input.GetMouseButtonDown(0) && !LeftMenuUI.isPointerDraggin)
-        {
-            RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hit))
-            {
-                if (hit.transform == this.transform)
-                {
-                    State = MovingState;
-                    LeftMenuUI.isPointerDraggin = true;
-                }
-            }
-        }
-        if (Input.GetMouseButtonUp(1))
-        {
-            RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hit))
-            {
-                if(hit.transform == transform)
-                {
-                    var pos = Input.mousePosition;
-                    if (infoMenu == null)
-                    {
-                        var uiNav = GameObject.Find("Canvas").GetComponentInChildren<LeftMenuUI>();
-                        var offSettedPivot = new Vector2((pivot.x - 1) * (-1), pivot.y);
-
-                        infoMenu = new DropList(prefab, parent,3, offSettedPivot, 20);
-                        infoMenu.SetPosition(pos);
-
-                        DelegateDestroyerButtom(2, "Remove");
-
-                        LeftMenuUI.DropListTracker.Add(infoMenu);
-                    }
-                    else if (infoMenu != null && !infoMenu._Items[0].gameObject.activeInHierarchy)
-                    {
-                        infoMenu.SetPosition(pos);
-                    }
-                    else if (infoMenu != null && infoMenu._Items[0].gameObject.activeInHierarchy)
-                    {
-                        infoMenu.EnableDisable();
-                    }
-                }            
-            }
-        }        
+        return new Vector3(
+             (WorldPos.x * MultiplicativeConstant + AdditiveCosntant.x),
+             (WorldPos.y * MultiplicativeConstant + AdditiveCosntant.y),
+             WorldPos.z);
     }
-    private void DelegateDestroyerButtom(int index, string text)
+    public void HighLightGridCircle(Vector3 center, int radius, Color color)
+    {
+        var offset = Testing.grid.roundingErrorOffset;
+        Vector3 grid = WorldPositionToGrid(center, 1/Testing.spacing, - Testing.grid.AnglePosOffset);;
+
+        for (int i = (int)grid.x, x = (int)grid.x; i <= radius + grid.x + 1; i++, x--)
+            for (int j = (int)grid.y, y = (int)grid.y; j <= radius + grid.y + 1; j++, y--)
+            {
+                HighLightFirstQaudrant(center, radius, color, offset, i, j);
+                HighLightSecondQuadrant(center, radius, color, offset, x, j);
+                HighLightThridQuadrant(center, radius, color, offset, x, y);
+                HighLightFourthQuadrant(center, radius, color, offset, i, y);
+            }
+    }
+    private void HighLightFirstQaudrant(Vector3 initPos, int range, Color color, float offset, int i, int j)
+    {
+        if (i < Testing.grid.width && j < Testing.grid.height && Vector3.Distance(initPos, Testing.grid.GridArray[i, j].transform.position) / Testing.spacing <= range + offset)
+            Testing.grid.GridArray[i, j].GetComponentInChildren<SpriteRenderer>().color = color;
+    }
+    private void HighLightSecondQuadrant(Vector3 initPos, int range, Color color, float offset, int x, int j)
+    {
+        if (x >= 0 && j < Testing.grid.height && Vector3.Distance(initPos, Testing.grid.GridArray[x, j].transform.position) / Testing.spacing <= range + offset)
+            Testing.grid.GridArray[x, j].GetComponentInChildren<SpriteRenderer>().color = color;
+    }
+    private void HighLightFourthQuadrant(Vector3 initPos, int range, Color color, float offset, int i, int y)
+    {
+        if (i < Testing.grid.width && y >= 0 && Vector3.Distance(initPos, Testing.grid.GridArray[i, y].transform.position) / Testing.spacing <= range + offset)
+            Testing.grid.GridArray[i, y].GetComponentInChildren<SpriteRenderer>().color = color;
+    }
+    private void HighLightThridQuadrant(Vector3 initPos, int range, Color color, float offset, int x, int y)
+    {
+        if (x >= 0 && y >= 0 && Vector3.Distance(initPos, Testing.grid.GridArray[x, y].transform.position) / Testing.spacing <= range + offset)
+            Testing.grid.GridArray[x, y].GetComponentInChildren<SpriteRenderer>().color = color;
+    }
+    private void InstntiateRemoveButton(int index, string text)
     {
         var buttonReference = infoMenu._Items[index];
         buttonReference.GetComponentInChildren<Text>().text = text;
@@ -113,6 +125,23 @@ public class EntetieScript : MonoBehaviour
         {
             Destroy(gameObject);
             infoMenu.Destroy();
+        }, buttonReference);
+    }
+    private void InstantiateMoveButton(int index, string text)
+    {
+        var buttonReference = infoMenu._Items[index];
+        buttonReference.GetComponentInChildren<Text>().text = text;
+        infoMenu.AddListeners(delegate
+        {
+            SetState(new WalkingState(this));
+        },buttonReference);
+    }
+    private void InstantiateRollButton(int index, string text)
+    {
+        var buttonReference = infoMenu._Items[index];
+        buttonReference.GetComponentInChildren<Text>().text = text;
+        infoMenu.AddListeners(delegate
+        {
         }, buttonReference);
     }
 }

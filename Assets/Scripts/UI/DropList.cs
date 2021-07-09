@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -135,6 +134,10 @@ public class DropList
         }
         return texts;
     }
+    public bool IsActive()
+    {
+        return  _Items[0].gameObject.activeInHierarchy;
+    }
     public DropList Expand(Transform parent, int items)
     {
         var isThisLastReference = lastReference == null;
@@ -176,7 +179,7 @@ public class DropList
         {          
             items -= _Items.Count;
             Instantiate(_preafab, _parent, items, _pivot, _spacing);
-            SetPosition(_parent.position + _offset);
+            SetPosition(_parent.position);
         }
         else if(items < _Items.Count)
         {

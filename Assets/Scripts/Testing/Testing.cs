@@ -2,20 +2,20 @@
 public class Testing : MonoBehaviour
 {
     [SerializeField] Sprite graphic;
-    [SerializeField] int width, height;
-    [SerializeField] float spacing;
+    public int width, height;
+    public float spacing;
     [SerializeField] Transform parent;
-    // Start is called before the first frame update
+    [SerializeField] Camera _myCam;
+    public Grid grid;
     private void Awake()
     {
-        
+        _myCam = _myCam ? _myCam : Camera.main;
     }
     void Start()
     {
-        Grid grid = new Grid(width, height, spacing, graphic, parent);
+        grid = new Grid(width, height, spacing, graphic, parent);
+       _myCam.GetComponent<CameraControler>().borderLimit = new Vector2(width/2.5f, height/2.5f);
     }
-  
-  
     private void Update()
     {
       

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
-using UnityEngine.UI;
-
+public enum EntetieListName
+{
+    MonsterManual = 0
+}
 public class Entetie
 {
     public Dictionary<string, string> fields; 
@@ -31,20 +31,21 @@ public class Entetie
         Items[0] = GetName;
         GameObject gam = new GameObject(GetName, typeof(SpriteRenderer));
         SpriteRenderer spriteRenderer = gam.GetComponent<SpriteRenderer>();
-        spriteRenderer.sprite = Resources.Load<Sprite>("placeholderSkull");
+        spriteRenderer.sprite = Resources.Load<Sprite>("SkeliBoi");
         var entetieInstance = gam.AddComponent<EntetieScript>();
         entetieInstance.Entetie = this;
         spriteRenderer.sortingOrder = 1;
         var col = gam.AddComponent<BoxCollider>();
         col.isTrigger = true;
-        gam.transform.localScale /= 5;
         return gam;
     }
 }
 public class EntetieList
 {
     public List<Entetie> Entities = new List<Entetie>();
+    public string _path;
     public List<Dictionary<string, string>> listFields = new List<Dictionary<string, string>>();
+    public EntetieListName _someName;
 
     public List<string> GetNames()
     {
@@ -63,14 +64,47 @@ public class EntetieList
             Entities.Add(new Entetie(newFields[i]));
             listFields.Add(newFields[i]);
         }
-
     }
-    public EntetieList(string path)
+    public EntetieList(EntetieListName someName, string path)
     {
        listFields = CustomJsonDeserializer.DeserializeFromJson(path);
         for (int i = 0; i < listFields.Count; i++)
         {
             Entities.Add(new Entetie(listFields[i]));
+        }
+        _someName = someName;
+        _path = path;
+    }
+    public EntetieList(string path)
+    {
+        listFields = CustomJsonDeserializer.DeserializeFromJson(path);
+        for (int i = 0; i < listFields.Count; i++)
+        {
+            Entities.Add(new Entetie(listFields[i]));
+        }
+        _path = path;
+    }
+}
+public class ListOfEntetieLists
+{
+    public static readonly Dictionary<string, EntetieList> PathListPair = new Dictionary<string, EntetieList>();
+    public static readonly Dictionary<EntetieListName, string> NamePathPair = new Dictionary<EntetieListName, string>();
+    public void AddList(EntetieListName someName , string path)
+    {
+        NamePathPair.Add(someName, path);
+        PathListPair.Add(path, new EntetieList(someName, path));
+    }
+    public void AddList(string path)
+    {
+        PathListPair.Add(path, new EntetieList(path));
+    }
+    public ListOfEntetieLists()
+    { }
+    public ListOfEntetieLists(List<string> paths)
+    {
+        foreach (var path in paths)
+        {
+            AddList(path);
         }
     }
 }

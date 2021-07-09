@@ -1,32 +1,36 @@
 ﻿
 using UnityEngine;
 using System.IO;
+using UnityEngine.Events;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
+using UnityEngine.UI;
 
 public class ImportScript : MonoBehaviour
 {
-    string importFilePath;
+    public delegate void ImportAction();
+    public static event ImportAction OnImport;
+    private string importFilePath;
     string savedFilePath;
-    [SerializeField] LeftMenuUI leftUI;
-    public void Import()
-    {    
-        string folderName = transform.parent.parent.name;
-        importFilePath = SFB.StandaloneFileBrowser.OpenFilePanel("GetMonsterManual", "", "", false)[0];
-        string import = File.ReadAllText(importFilePath);
+    string folderName;
+    public void EntetieList()
+    {
+        folderName = EntetieListName.MonsterManual.ToString();
+        importFilePath = SFB.StandaloneFileBrowser.OpenFilePanel("Select the txt file", "", "", false)[0];  
         savedFilePath = Application.streamingAssetsPath+ @"\" + folderName + ".json";
-
+        Debug.Log(savedFilePath);
         if (File.Exists(savedFilePath))
         {
-            leftUI.monsterManual.Import(importFilePath);
-            var jString = Newtonsoft.Json.JsonConvert.SerializeObject(leftUI.monsterManual.listFields);
-            File.WriteAllText(savedFilePath, jString);
+            EntetieList entetieList = new EntetieList(savedFilePath);
+            entetieList.Import(importFilePath);
+            var jString = Newtonsoft.Json.JsonConvert.SerializeObject(entetieList.listFields);
+            File.WriteAllText(savedFilePath, jString);     
         }
         else
         {
+            string import = File.ReadAllText(importFilePath);
             File.WriteAllText(savedFilePath, import);
-            leftUI.monsterManual = new EntetieList(importFilePath);
-            leftUI.DrawMonsterManual(savedFilePath);
-        } 
+            new EntetieList(importFilePath);
+        }
+        OnImport?.Invoke();
     }
 }

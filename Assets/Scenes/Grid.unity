@@ -2294,8 +2294,6 @@ MonoBehaviour:
   BoxSelector:
     min: {x: 0, y: 0, z: 0}
     max: {x: 0, y: 0, z: 0}
-  timeFrame: 0.25
-  initialTimeFrame: 0.25
   colliders: []
 --- !u!114 &917801269
 MonoBehaviour:

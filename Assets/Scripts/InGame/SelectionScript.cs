@@ -73,14 +73,16 @@ public class SelectionScript : MonoBehaviour
     }
     void TrackSelectionGUI()
     {
-        foreach (EntetieScript entetieSelected in SelectedEnteties)
+        for (int i = 0; i < SelectedEnteties.Count; i++)
         {
+            EntetieScript entetieSelected = SelectedEnteties[i];
             if (entetieSelected.SelectionGUI == null)
             {
                 entetieSelected.SelectionGUI = SelectionGUI();
                 AssignSelectionGUI(entetieSelected.gameObject, entetieSelected.SelectionGUI, _myCam);
             }
-            else AssignSelectionGUI(entetieSelected.gameObject, entetieSelected.SelectionGUI, _myCam);
+            else if (entetieSelected != null) AssignSelectionGUI(entetieSelected.gameObject, entetieSelected.SelectionGUI, _myCam);
+            else Unsellect(SelectedEnteties[i]);
         }
     }
     void HandleEntetiesInput()
@@ -91,6 +93,7 @@ public class SelectionScript : MonoBehaviour
             State entetieState = entetie.GetState();
             if (AnySelectedEntetieNotIdle()) return;
             entetieState.HanldeInput();
+            if (Input.GetKey(KeyCode.LeftControl)) return;
         }
     }
     public static void SetNextEntetieToFirstIndex(EntetieScript entetie)

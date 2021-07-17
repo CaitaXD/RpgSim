@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class EntetieScript : EntetieStateMachine
 {
+    public Transform currentTarget;
     public Entetie Entetie;
     public Dictionary<string,string> fields = new Dictionary<string, string>();
     private DropList infoMenu;
@@ -14,6 +16,7 @@ public class EntetieScript : EntetieStateMachine
     public Testing Testing;
     public bool SelectedCurrently;
     public GameObject SelectionGUI;
+    public LineRenderer lineRenderer;
     bool isAlive = true;
     public bool IsAlive() { if(Health <= 0) return isAlive = false; else return isAlive = true;}
     public int Health;
@@ -23,6 +26,7 @@ public class EntetieScript : EntetieStateMachine
         Testing = GameObject.Find("Scripts").GetComponent<Testing>();
         parent = parent ? parent : GameObject.Find("Canvas").GetComponent<Transform>();
         prefab = prefab ? prefab : Resources.Load("Prefabs/Ui/UiText") as GameObject;
+        lineRenderer = lineRenderer ? lineRenderer : Instantiate((Resources.Load("Prefabs/Ui/DeafultTargetLineDrawer") as GameObject).GetComponent<LineRenderer>(),transform);
         SetState(new DraggingState(this));
     }
     void Start()
@@ -32,13 +36,31 @@ public class EntetieScript : EntetieStateMachine
             fields.Add(kvp.Key, kvp.Value);
         } 
     }
-    public static int GetAtrtibuteValue(string attribute)
+    public int GetAtrtibuteValue(string attribute)
     {
         List<char> numbers = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-'};
         int number = 0;
         string str = "";
         string[] speeds = attribute.Split(new string[] { "," }, System.StringSplitOptions.RemoveEmptyEntries);
         speeds = attribute.Split(new string[] { "(" }, System.StringSplitOptions.RemoveEmptyEntries);
+        for (int i = 0; i < speeds[0].Length; i++)
+        {
+            if (numbers.Contains(speeds[0][i]))
+            {
+                str = str + speeds[0][i];
+            }
+        }
+        number = int.Parse(str);
+        return number;
+    }
+    public int GetAtrtibuteValue(EntetieScript target,string attribute)
+    {
+        string speedField = target.fields[attribute];
+        List<char> numbers = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-' };
+        int number = 0;
+        string str = "";
+        string[] speeds = speedField.Split(new string[] { "," }, System.StringSplitOptions.RemoveEmptyEntries);
+        speeds = speedField.Split(new string[] { "(" }, System.StringSplitOptions.RemoveEmptyEntries);
         for (int i = 0; i < speeds[0].Length; i++)
         {
             if (numbers.Contains(speeds[0][i]))
@@ -143,5 +165,57 @@ public class EntetieScript : EntetieStateMachine
         infoMenu.AddListeners(delegate
         {
         }, buttonReference);
+    }
+
+    public Action Result (bool result,Action OnSucess ,Action OnFaliure)
+    {
+        if(result) return OnSucess;
+        else return OnFaliure;
+    }
+    public bool Contest(EntetieScript target, string Field1, string Field2)
+    {
+        int f1, f2;
+        f1 = GetAtrtibuteValue(Field1);
+        f2 = GetAtrtibuteValue(target, Field2);
+        if (f1 > f2) return true;
+        else  return false;
+    }
+    public void AlterFieldValue(EntetieScript target,string field,int value)
+    {
+        int fieldValue = GetAtrtibuteValue(target, field);
+        fieldValue = fieldValue + value;
+        target.fields[field] = fieldValue.ToString();
+    }
+    public Transform Target(EntetieScript entetie, Camera myCam)
+    {
+        RaycastHit hit;
+        Ray ray = myCam.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out hit))
+        {
+            return hit.transform;
+        }
+        return null;
+    }
+    public LineRenderer DrawArrow(Transform target)
+    {
+        if(target == null) return null;
+        lineRenderer.enabled = true;
+        Vector3 origin = transform.position;
+        Vector3 destination = target.position;
+
+        lineRenderer.SetPosition(0, origin);
+        lineRenderer.SetPosition(1, destination);
+        return lineRenderer;
+    }
+    public LineRenderer DrawLineToCurrentTarget()
+    {
+        if(currentTarget == null) return null;
+        lineRenderer.enabled = true;
+        Vector3 origin = transform.position;
+        Vector3 destination = currentTarget.position;
+
+        lineRenderer.SetPosition(0, origin);
+        lineRenderer.SetPosition(1, destination);
+        return lineRenderer;
     }
 }

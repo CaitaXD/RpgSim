@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class IdleState : State
 {
-    public Transform currentTarget;
+    Transform currentTargetTransform => entetieScript.currentTarget;
+    EntetieScript currentTargetEntetieScript;
     public bool wasRayCasted;
     public IdleState(EntetieScript entetieScript) : base(entetieScript)
     {
@@ -24,19 +25,30 @@ public class IdleState : State
             { 
                 KeyCode.D,  delegate
                 {
-                    EntetieManager.AlterFieldValue(entetieScript, "HitPoints", -1);
+                    if(currentTargetTransform != null) currentTargetEntetieScript = currentTargetTransform.GetComponent<EntetieScript>();
+                    if(currentTargetEntetieScript != null) entetieScript.AlterFieldValue(currentTargetEntetieScript, "HitPoints", -1);
                 }
             },
             { 
                 KeyCode.T,  delegate
                 {
-                    currentTarget = EntetieManager.Target(entetieScript, Camera.main);
+                    entetieScript.currentTarget = entetieScript.Target(entetieScript, Camera.main); 
+                    entetieScript.DrawArrow(currentTargetTransform);
+                    if(Input.GetKey(KeyCode.LeftControl)) SelectionScript.SetNextEntetieToFirstIndex(entetieScript);
                 }
             },
             { 
                 KeyCode.Escape,  delegate
                 {
-                    currentTarget = null;
+                    entetieScript.currentTarget = null;
+                    currentTargetEntetieScript = null;
+                    entetieScript.lineRenderer.enabled = false;
+                }
+            },
+            { 
+                KeyCode.R,  delegate
+                {
+                    
                 }
             }
         };

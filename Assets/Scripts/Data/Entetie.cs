@@ -5,7 +5,7 @@ public enum EntetieListName
 {
     MonsterManual = 0
 }
-public class Entetie
+public class Entetie : ScriptableObject
 {
     public Dictionary<string, string> fields; 
     public string GetName => fields["name"];

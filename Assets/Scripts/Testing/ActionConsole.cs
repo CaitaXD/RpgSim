@@ -12,37 +12,6 @@ public class ActionConsole : MonoBehaviour
 
     private void Start()
     {
-       /* //command = "Contest(Roll(20)+Stat(STR_mod),Stat(ArmorClass))";
-        command = "Roll(20)";
-        if (CheckCommand(command) <= 20 && CheckCommand(command) >= 1)
-            Debug.Log("Roll20 V");
-        else Debug.Log("Roll20 F");
-        command = "Roll(2)+Roll(2)+Roll(2)+Roll(2)";
-        if (CheckCommand(command) <= 8 && CheckCommand(command) >= 4)
-            Debug.Log("4d2 V");
-        else Debug.Log("4d2 F");
-        command = "Roll(6)+ Roll(6) + 6";
-        if (CheckCommand(command) <= 18 && CheckCommand(command) >= 8)
-            Debug.Log("2d6 + 6 V");
-        else Debug.Log("2d6 + 6 F");
-        //command = "Contest(Roll(Roll(Roll(20))),Contest(Roll(Roll(20)),Stat(ArmorClass)))";
-       command = "2+2-2-2+2";
-       result = CheckCommand(command);
-        if (CheckCommand(command) == 2)
-            Debug.Log("+- V");
-        else Debug.Log("+- F");
-        command = "Roll(6) + 5 + Roll(6) + 3";
-        if (CheckCommand(command) <= 20 && CheckCommand(command) >= 10)
-            Debug.Log("GreatSword V");
-        else Debug.Log("GreatSword F");
-        command = "Contest(2,1)";
-        if (CheckCommand(command) == 1)
-            Debug.Log("Contest V");
-        else Debug.Log("Contest F");
-        command = "Roll(20)-Roll(20)";
-        if (CheckCommand(command) == 0)
-            Debug.Log("Faulty Random");
-        else Debug.Log("Random V");*/
     }
     private void Update()
     {

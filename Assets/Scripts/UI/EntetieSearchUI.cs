@@ -22,7 +22,6 @@ public class EntetieSearchUI : MonoBehaviour
     private EntetieList CurrentList;
     private string SearchType;
 
-
     static public List<DropList> DropListTracker = new List<DropList>();
     static public bool isPointerDraggin = false;
 

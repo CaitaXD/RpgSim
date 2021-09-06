@@ -3,8 +3,13 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
+ public enum DropListOrientation
+{
+    rigth,left,down,up
+}
 public class DropList
 {
+    protected DropListOrientation _orientation = DropListOrientation.down; 
     protected float _spacing = 75;
     protected Vector2 _pivot = new Vector2(0.5f, 0.5f);
     protected Vector3 _offset;
@@ -20,17 +25,33 @@ public class DropList
     }
     public DropList(GameObject preafab, Transform parent, int items)
     {
-        Instantiate(preafab, parent, items, _pivot, _spacing);
+        Instantiate(preafab, parent, items, _pivot, _spacing, _orientation);
+    }
+    public DropList (GameObject preafab, Transform parent, int items, DropListOrientation orientation)
+    {
+        Instantiate(preafab, parent, items, _pivot, _spacing, orientation);
+    }
+    public DropList (GameObject preafab, Transform parent, int items,float spacing, DropListOrientation orientation)
+    {
+        Instantiate(preafab, parent, items, _pivot, spacing, orientation);
     }
     public DropList(GameObject preafab, Transform parent, int items, Vector2 pivot)
     {
-        Instantiate(preafab, parent, items, pivot, _spacing);
+        Instantiate(preafab, parent, items, pivot, _spacing, _orientation);
+    }
+    public DropList(GameObject preafab, Transform parent, int items, Vector2 pivot, DropListOrientation orientation)
+    {
+        Instantiate(preafab, parent, items, pivot, _spacing, orientation);
     }
     public DropList(GameObject preafab, Transform parent, int items, Vector2 pivot, float spacing)
     {
-        Instantiate(preafab, parent, items, pivot, spacing);
+        Instantiate(preafab, parent, items, pivot, spacing, _orientation);
     }
-    protected void Instantiate(GameObject preafab, Transform parent, int items, Vector2 pivot, float spacing)
+    public DropList(GameObject preafab, Transform parent, int items, Vector2 pivot, float spacing, DropListOrientation orientation)
+    {
+        Instantiate(preafab, parent, items, pivot, spacing, orientation);
+    }
+    protected void Instantiate(GameObject preafab, Transform parent, int items, Vector2 pivot, float spacing, DropListOrientation mode)
     {
         _preafab = preafab;
         _parent = parent;
@@ -38,10 +59,23 @@ public class DropList
         _pivot = pivot;
         _items = items;
         Vector3 pos = parent.position;
-        _offset = new Vector3(0, -spacing, 0);
         for (int i = 0; i < items; i++)
         {
-            _offset = new Vector3(0, -spacing, 0);
+            switch(mode)
+            {
+                case DropListOrientation.left:
+                     _offset = new Vector3(-spacing, 0, 0);
+                break;
+                  case DropListOrientation.up:
+                     _offset = new Vector3(0, spacing, 0);
+                break;
+                case DropListOrientation.rigth:
+                    _offset = new Vector3(spacing, 0, 0);
+                break;
+                case DropListOrientation.down:
+                    _offset = new Vector3(0, -spacing, 0);
+                break;
+            }
             var gam = GameObject.Instantiate(_preafab);
             gam.transform.SetParent(parent);
             gam.transform.position = pos;
@@ -178,7 +212,7 @@ public class DropList
         if (items > _Items.Count)
         {          
             items -= _Items.Count;
-            Instantiate(_preafab, _parent, items, _pivot, _spacing);
+            Instantiate(_preafab, _parent, items, _pivot, _spacing, _orientation);
             SetPosition(_parent.position);
         }
         else if(items < _Items.Count)

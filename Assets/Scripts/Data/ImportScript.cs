@@ -1,10 +1,6 @@
 ﻿
 using UnityEngine;
 using System.IO;
-using UnityEngine.Events;
-using System.Collections.Generic;
-using UnityEngine.UI;
-
 public class ImportScript : MonoBehaviour
 {
     public delegate void ImportAction();

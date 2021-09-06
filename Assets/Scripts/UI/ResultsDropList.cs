@@ -6,15 +6,15 @@ public class ResultsDropList : DropList
     private SearchEngine searchEngine;
     public ResultsDropList(GameObject preafab, Transform parent, int items)
     {
-        Instantiate(preafab, parent, items, _pivot, _spacing);
+        Instantiate(preafab, parent, items, _pivot, _spacing, _orientation);
     }
     public ResultsDropList(GameObject preafab, Transform parent, int items, Vector2 pivot)
     {
-        Instantiate(preafab, parent, items, pivot, _spacing);
+        Instantiate(preafab, parent, items, pivot, _spacing, _orientation);
     }
     public ResultsDropList(GameObject preafab, Transform parent, int items, Vector2 pivot, float spacing)
     {
-        Instantiate(preafab, parent, items, pivot, spacing);
+        Instantiate(preafab, parent, items, pivot, spacing, _orientation);
     }
     public void SearchOnValueChanged(SearchEngine searchEngine , EntetieList entetieList)
     {

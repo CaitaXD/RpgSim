@@ -25,7 +25,7 @@ public class ResultManager : MonoBehaviour
     {
         for (int i = 0; i < command.Length; i++)
         {
-            foreach (var operation in Operations)
+            foreach (var operation in expressionHandler.Operations)
             {
                 if(command[i].ToString() == operation.Key)
                 {

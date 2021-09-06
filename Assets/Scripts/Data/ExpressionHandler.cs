@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ExpressionHandler
 {
-    Dictionary<string, int> Operations = new Dictionary<string, int>
+    public Dictionary<string, int> Operations = new Dictionary<string, int>
     {
         {"+",2},{"-",2},{"d",3}
     };

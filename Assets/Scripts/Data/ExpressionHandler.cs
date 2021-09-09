@@ -30,9 +30,9 @@ public class ExpressionHandler
         float A = StringToNumber(operandA);
         float B = StringToNumber(operandB);
 
-        void SetAbsorbedElement(float value)
+        void ParseNAN(float value) //StrinToNumber will return NAN if the string is empty
         {
-            A = AssginValueIfNAN(A, value);
+            A = AssginValueIfNAN(A, value); 
             B = AssginValueIfNAN(B, value);
         }
         string currentOperation;
@@ -40,28 +40,28 @@ public class ExpressionHandler
         switch (Operator)
         {
             case "+":
-                SetAbsorbedElement(0);
+                ParseNAN(0);
                 currentOperation = (A + B).ToString();
                 newOperation = HandleExpression(currentOperation + restOfOperation)[0];
                 Results.Add(newOperation);
                 return Results;
 
             case "-":
-                SetAbsorbedElement(0);
+                ParseNAN(0);
                 currentOperation = (A - B).ToString();
                 newOperation = HandleExpression(currentOperation + restOfOperation)[0];
                 Results.Add(newOperation);
                 return Results;
 
             case "*":
-                SetAbsorbedElement(1);
+                ParseNAN(1);
                 currentOperation = (A * B).ToString();
                 newOperation = HandleExpression(currentOperation + restOfOperation)[0];
                 Results.Add(newOperation);
                 return Results;
 
             case "d":
-                SetAbsorbedElement(1);
+                ParseNAN(1);
                 for (int i = 0; i < A || i < 1; i++)
                     Results.Add(rand.Next(1, (int)B + 1));
                 return Results;

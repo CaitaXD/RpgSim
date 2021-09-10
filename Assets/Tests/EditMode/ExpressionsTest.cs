@@ -41,6 +41,8 @@ namespace Tests
             Assert.AreEqual(expected: 2f, calc.HandleExpression("1*1+1")[0]);
             Assert.AreEqual(expected: 10f, calc.HandleExpression("5+1*5")[0]);
             Assert.AreEqual(expected: 15f, calc.HandleExpression("5+1*5+5")[0]);
+            Assert.AreEqual(expected: 636f, calc.HandleExpression("1+5*5*5*5+5+5")[0]);
+            Assert.AreEqual(expected: true, calc.HandleExpression("125*125*5+65*8+4*8+5*8*8*45*554*5")[0] > 0); // Needs an nE+m operation to work
         }
         [Test]
         public void diceRoll()

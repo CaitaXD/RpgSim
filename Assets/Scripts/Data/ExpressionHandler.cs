@@ -24,44 +24,45 @@ public class ExpressionHandler
         
         string operandA = GetOperandA(indexOfOperation, argument);
         string operandB = GetOperandB(indexOfOperation, argument);
-        string restOfOperation = GetRestOfOperation(argument, operandA, operandB, IndexesOfOperations);
         string Operator = argument[indexOfOperation].ToString();
 
         float A = StringToNumber(operandA);
         float B = StringToNumber(operandB);
 
-        void ParseNAN(float value) //StrinToNumber will return NAN if the string is empty
+        void ParseNANoperators(float value) //StrinToNumber will return NAN if the string is empty
         {
             A = AssginValueIfNAN(A, value); 
             B = AssginValueIfNAN(B, value);
         }
         string currentOperation;
         float newOperation;
+        int leanghtOfA = A.ToString().Length;
+        int leanghtOfB = B.ToString().Length;
         switch (Operator)
         {
             case "+":
-                ParseNAN(0);
+                ParseNANoperators(0);
                 currentOperation = (A + B).ToString();
-                newOperation = HandleExpression(currentOperation + restOfOperation)[0];
+                newOperation = HandleExpression(GetBeforeOperatorion(argument, leanghtOfA, IndexesOfOperations) + currentOperation + GetAfterOperatorion(argument, leanghtOfB, IndexesOfOperations))[0];
                 Results.Add(newOperation);
                 return Results;
 
             case "-":
-                ParseNAN(0);
+                ParseNANoperators(0);
                 currentOperation = (A - B).ToString();
-                newOperation = HandleExpression(currentOperation + restOfOperation)[0];
+                newOperation = HandleExpression(GetBeforeOperatorion(argument, leanghtOfA, IndexesOfOperations) + currentOperation + GetAfterOperatorion(argument, leanghtOfB, IndexesOfOperations))[0];
                 Results.Add(newOperation);
                 return Results;
 
             case "*":
-                ParseNAN(1);
+                ParseNANoperators(1);
                 currentOperation = (A * B).ToString();
-                newOperation = HandleExpression(currentOperation + restOfOperation)[0];
+                newOperation = HandleExpression(GetBeforeOperatorion(argument, leanghtOfA, IndexesOfOperations) + currentOperation + GetAfterOperatorion(argument, leanghtOfB, IndexesOfOperations))[0];
                 Results.Add(newOperation);
                 return Results;
 
             case "d":
-                ParseNAN(1);
+                ParseNANoperators(1);
                 for (int i = 0; i < A || i < 1; i++)
                     Results.Add(rand.Next(1, (int)B + 1));
                 return Results;
@@ -69,26 +70,24 @@ public class ExpressionHandler
         return new List<float>();
     }
 
-    private string GetRestOfOperation(string argument, string operandA, string operandB, List<int> IndexesOfOperations)
+    private string GetBeforeOperatorion(string argument, int lenght, List<int> IndexesOfOperations)
     {
         if (IndexesOfOperations.Count > 1)
         {
-            string beforeOperator = argument.Substring(0, IndexesOfOperations[0] - operandA.Length);
-            if (beforeOperator != "" && Operations.Keys.Any(x => x == beforeOperator[beforeOperator.Length - 1].ToString()))
-            {
-                beforeOperator = beforeOperator[beforeOperator.Length - 1] + beforeOperator.Substring(0, beforeOperator.Length - 1);
-            }
-
-            string afterOperator = argument.Substring(IndexesOfOperations[0] + operandB.Length + 1);
-            if (afterOperator != "" && Operations.Keys.Any(x => x == afterOperator[afterOperator.Length - 1].ToString()))
-            {
-                afterOperator = afterOperator[afterOperator.Length - 1] + afterOperator.Substring(0, afterOperator.Length - 1);
-            }
-            return beforeOperator + afterOperator;
+            string beforeOperator = argument.Substring(0, IndexesOfOperations[0] - lenght);
+                        return beforeOperator;
         }
         return "";
     }
-
+    private string GetAfterOperatorion(string argument, int lenght, List<int> IndexesOfOperations)
+    {
+        if (IndexesOfOperations.Count > 1)
+        {
+            string afterOperator = argument.Substring(IndexesOfOperations[0] + lenght + 1);
+            return afterOperator;
+        }
+        return "";
+    }
     private List<int> GetIndexesOfOperations(string argument)
     {               
         List<int> opis = new List<int>();
@@ -125,7 +124,7 @@ public class ExpressionHandler
             }
         }
         if (str == "") return float.NaN;
-        return int.Parse(str);
+        return float.Parse(str);
     }
 
     private string GetOperandA(int index,string argument)
@@ -157,7 +156,7 @@ public class ExpressionHandler
             index = 0;
             while(check)
             {
-                check = Operations.Keys.Any(x => x == sub[index].ToString());
+                check = !Operations.Keys.Any(x => x == sub[index].ToString());
                 index++;
             }
             if(index <= sub.Length)sub = sub.Substring(0, index);

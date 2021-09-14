@@ -1,37 +1,16 @@
-## Welcome to GitHub Pages
+## Heres a video showing the prototype's current state and working features
 
-You can use the [editor on GitHub](https://github.com/CaitaXD/RpgSim/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+[![link text](https://i9.ytimg.com/vi_webp/w3ucRKSPbxQ/mqdefault.webp?v=61404069&sqp=CLyAgYoG&rs=AOn4CLAjOsFI8INy41P_37bz2MYjNnEYwA)](https://www.youtube.com/watch?v=w3ucRKSPbxQ)
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Here are the the code related to the features dysplayed in the video: 
 
-### Markdown
+[Parsing from Json]( https://github.com/CaitaXD/RpgSim/wiki/JArrayDeserializer-Class)
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Search algoritm
 
-```markdown
-Syntax highlighted code block
+Movement
 
-# Header 1
-## Header 2
-### Header 3
+Selection
 
-- Bulleted
-- List
+Camera
 
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/CaitaXD/RpgSim/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.

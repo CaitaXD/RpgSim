@@ -1,14 +1,12 @@
 ﻿using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using UnityEngine;
 
-public static class CustomJsonDeserializer
+public static class JArrayDeserializer
 {
-    public static List<Dictionary<string,string>> DeserializeFromJson (string path)
+    public static List<Dictionary<string,string>> JsonToStringStringDictionaryList (string path)
     {
         List<string> Results = new List<string>();
         var txtString = File.ReadAllText(path);
@@ -28,13 +26,13 @@ public static class CustomJsonDeserializer
                 {
                     string var = Results[i];
                     recipient = var.Split(new string[] { "\":" }, System.StringSplitOptions.RemoveEmptyEntries).ToList();
-                    fields[i1].Add(RemoveSpecialCharacters(recipient[0]).Trim(), RemoveSpecialCharacters(recipient[1]));
+                    fields[i1].Add(RemoveUnwantedCharacters(recipient[0]).Trim(), RemoveUnwantedCharacters(recipient[1]));
                 }
             }
         }
         return fields;
     }
-    public static string RemoveSpecialCharacters(this string str)
+    public static string RemoveUnwantedCharacters(this string str)
     {
         StringBuilder sb = new StringBuilder();
         foreach (char c in str)

@@ -6,8 +6,8 @@ using UnityEngine.UI;
 public class SearchEngine
 {
     public TMP_InputField inputField { get;private set; }
-    List<string> results = new List<string>();
-    int increment = 0;
+    List<string> _results = new List<string>();
+    int _increment = 0;
 
     public SearchEngine(TMP_InputField inputField)
     {
@@ -15,55 +15,52 @@ public class SearchEngine
     }
     public List<string> Search(List<string> Data)
     {  
-        results = new List<string>();
+        _results = new List<string>();
         for (int i = 0; i < Data.Count; i++)
         {
             if (Data[i].ToLower().Contains(inputField.text.ToLower()))
             {
-                results.Add(Data[i]);
+                _results.Add(Data[i]);
             }
         }
-        return results;
+        return _results;
     }
-    public void RollResultsList(List<Text> _Texts)
+    public void RollResultsList(List<Text> Texts)
     {
-        if (results.Count > _Texts.Count)
+        if (_results.Count > Texts.Count)
         {
             if (Input.GetKey(KeyCode.DownArrow))
             {
-              increment++;
-              for (int i = 0; i < _Texts.Count; i++)
+              _increment++;
+              for (int i = 0; i < Texts.Count; i++)
               {
-                if (i + increment < results.Count) 
+                if (i + _increment < _results.Count) 
                 {
-                  if (results.Last() != _Texts.Last().text)
+                  if (_results.Last() != Texts.Last().text)
                   {
-                  _Texts[i].text = results[i + increment];            
+                  Texts[i].text = _results[i + _increment];            
                   }
                 }
-                  else increment--;
+                  else _increment--;
               }
             } 
             if (Input.GetKey(KeyCode.UpArrow))
             {
-            increment--;
-            for (int i = 0; i < _Texts.Count; i++)
+            _increment--;
+            for (int i = 0; i < Texts.Count; i++)
               {
-                if (i + increment >= 0) 
+                if (i + _increment >= 0) 
                 {
-                   if (results[i] != _Texts[i].text)
+                   if (_results[i] != Texts[i].text)
                    {
-                    _Texts[i].text = results[i + increment];
+                    Texts[i].text = _results[i + _increment];
                    }
                 }
-                else increment = 0;
+                else _increment = 0;
               }  
             }
         }
     }
 
-    public List<string> GetResults()
-    {
-        return results;
-    }
+    public List<string> GetResults() => _results;
 }

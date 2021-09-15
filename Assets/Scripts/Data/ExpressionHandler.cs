@@ -5,17 +5,20 @@ using UnityEngine;
 
 public class ExpressionHandler
 {
+    public string _argument = "";
     public Dictionary<string, int> Operations = new Dictionary<string, int>
     {
-        {"+",2},{"-",2},{"d",3},{"*",1}
+        {"+",2},{"-",2},{"d",3},{"*",1},{"/",1}
     };
     System.Random rand = new System.Random(Mathf.RoundToInt(System.DateTime.Now.Millisecond)); //PLACEHOLDER
     public List<float> HandleExpression(string argument)
     {
+        _argument = argument;
         List<int> IndexesOfOperations =  GetIndexesOfOperations(argument);
+        bool isDiceRoll = argument[0] == 'd'; 
         bool existOperations = IndexesOfOperations[0] > 0;
 
-        if (existOperations == false) 
+        if (existOperations == false && !isDiceRoll) 
         return new List<float> { StringToNumber(argument) };
 
         List<float> Results = new List<float>();
@@ -43,21 +46,33 @@ public class ExpressionHandler
             case "+":
                 ParseNANoperators(0);
                 currentOperation = (A + B).ToString();
-                newOperation = HandleExpression(GetBeforeOperatorion(argument, leanghtOfA, IndexesOfOperations) + currentOperation + GetAfterOperatorion(argument, leanghtOfB, IndexesOfOperations))[0];
+                newOperation = HandleExpression(GetNewOperationLeftOfCurrent(argument, leanghtOfA, IndexesOfOperations) + currentOperation + GetNewOperationRightOfCurrent(argument, leanghtOfB, IndexesOfOperations))[0];
                 Results.Add(newOperation);
                 return Results;
 
             case "-":
                 ParseNANoperators(0);
                 currentOperation = (A - B).ToString();
-                newOperation = HandleExpression(GetBeforeOperatorion(argument, leanghtOfA, IndexesOfOperations) + currentOperation + GetAfterOperatorion(argument, leanghtOfB, IndexesOfOperations))[0];
+                newOperation = HandleExpression(GetNewOperationLeftOfCurrent(argument, leanghtOfA, IndexesOfOperations) + currentOperation + GetNewOperationRightOfCurrent(argument, leanghtOfB, IndexesOfOperations))[0];
                 Results.Add(newOperation);
                 return Results;
 
             case "*":
                 ParseNANoperators(1);
                 currentOperation = (A * B).ToString();
-                newOperation = HandleExpression(GetBeforeOperatorion(argument, leanghtOfA, IndexesOfOperations) + currentOperation + GetAfterOperatorion(argument, leanghtOfB, IndexesOfOperations))[0];
+                newOperation = HandleExpression(GetNewOperationLeftOfCurrent(argument, leanghtOfA, IndexesOfOperations) + currentOperation + GetNewOperationRightOfCurrent(argument, leanghtOfB, IndexesOfOperations))[0];
+                Results.Add(newOperation);
+                return Results;
+
+            case "/":
+                ParseNANoperators(1);
+                if(B == 0)
+                { 
+                    Results.Add(float.NaN);
+                    return Results;
+                }
+                currentOperation = (A / B).ToString();
+                newOperation = HandleExpression(GetNewOperationLeftOfCurrent(argument, leanghtOfA, IndexesOfOperations) + currentOperation + GetNewOperationRightOfCurrent(argument, leanghtOfB, IndexesOfOperations))[0];
                 Results.Add(newOperation);
                 return Results;
 
@@ -70,7 +85,7 @@ public class ExpressionHandler
         return new List<float>();
     }
 
-    private string GetBeforeOperatorion(string argument, int lenght, List<int> IndexesOfOperations)
+    private string GetNewOperationLeftOfCurrent(string argument, int lenght, List<int> IndexesOfOperations)
     {
         if (IndexesOfOperations.Count > 1)
         {
@@ -79,7 +94,7 @@ public class ExpressionHandler
         }
         return "";
     }
-    private string GetAfterOperatorion(string argument, int lenght, List<int> IndexesOfOperations)
+    private string GetNewOperationRightOfCurrent(string argument, int lenght, List<int> IndexesOfOperations)
     {
         if (IndexesOfOperations.Count > 1)
         {
@@ -96,7 +111,7 @@ public class ExpressionHandler
             var index = argument.IndexOf(oper);
             while(index >= 0)
             {
-                if(index == 0)
+                if(index == 0 && argument[0] != 'd')
                 {
                     index = argument.IndexOf(oper, index + 1);
                     if(index > 0) opis.Add(index);
@@ -114,7 +129,7 @@ public class ExpressionHandler
     }
     private float StringToNumber(string arg)
     {
-        List<string> numbers = new List<string> { "1","2","3","4","5","6","7","8","9","0","-"};
+        List<string> numbers = new List<string> { "1","2","3","4","5","6","7","8","9","0","-",",","."};
         string str = "";
         for (int i = 0; i < arg.Length; i++)
         {
@@ -130,7 +145,7 @@ public class ExpressionHandler
     private string GetOperandA(int index,string argument)
         {
             string sub = argument.Substring(0,index);
-            char sign = sub[0];
+            char sign = sub.FirstOrDefault();
             bool check = true;
             int operations = GetIndexesOfOperations(sub).Count;
             bool firstDigitisSign = Operations.ContainsKey(sign.ToString());

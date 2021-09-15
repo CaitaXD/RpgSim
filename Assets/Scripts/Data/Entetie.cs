@@ -58,7 +58,7 @@ public class EntetieList
     }
     public void Import(string path)
     {
-        var newFields = CustomJsonDeserializer.DeserializeFromJson(path);
+        var newFields = JArrayDeserializer.JsonToStringStringDictionaryList(path);
         for (int i = 0; i < newFields.Count; i++)
         {
             Entities.Add(new Entetie(newFields[i]));
@@ -67,7 +67,7 @@ public class EntetieList
     }
     public EntetieList(EntetieListName someName, string path)
     {
-       listFields = CustomJsonDeserializer.DeserializeFromJson(path);
+       listFields = JArrayDeserializer.JsonToStringStringDictionaryList(path);
         for (int i = 0; i < listFields.Count; i++)
         {
             Entities.Add(new Entetie(listFields[i]));
@@ -77,7 +77,7 @@ public class EntetieList
     }
     public EntetieList(string path)
     {
-        listFields = CustomJsonDeserializer.DeserializeFromJson(path);
+        listFields = JArrayDeserializer.JsonToStringStringDictionaryList(path);
         for (int i = 0; i < listFields.Count; i++)
         {
             Entities.Add(new Entetie(listFields[i]));

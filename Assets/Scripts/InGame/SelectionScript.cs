@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class SelectionScript : MonoBehaviour
 {
+    public static List<EntetieScript> SelectedEnteties = new List<EntetieScript>();
+
     [SerializeField] GameObject SelectinGUIPrefab;
     [SerializeField] Camera _myCam;
     [SerializeField] BoxSelector BoxSelector;
@@ -18,7 +20,6 @@ public class SelectionScript : MonoBehaviour
     float timer;
     float timeFrame = 0.25f;
     Ray ray;
-    public static List<EntetieScript> SelectedEnteties = new List<EntetieScript>();
     [SerializeField]Collider[] colliders;
     private void Awake()
     {
@@ -113,6 +114,7 @@ public class SelectionScript : MonoBehaviour
     public void Select(EntetieScript entetieSelected)
     {
         SelectedEnteties.Add(entetieSelected);
+        Events.current.SelectionChange();
     }
     public static void Unsellect(List<EntetieScript> SelectedEnteties)
     {
@@ -133,6 +135,7 @@ public class SelectionScript : MonoBehaviour
     static void OnUnselect(EntetieScript SelectedEntetie)
     {
         Destroy(SelectedEntetie.SelectionGUI);
+        Events.current.ClearSelection();
     }
     void AssignSelectionGUI(GameObject selected, GameObject selectionGUI,Camera myCam)
     {

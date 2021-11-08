@@ -8,6 +8,7 @@ public class EntetieScript : EntetieStateMachine
 {
     public Transform currentTarget;
     public Entetie Entetie;
+    public Sprite _sprite;
     public Dictionary<string,string> fields = new Dictionary<string, string>();
     private DropList infoMenu;
     public GameObject prefab;
@@ -21,20 +22,17 @@ public class EntetieScript : EntetieStateMachine
     public bool IsAlive() { if(Health <= 0) return isAlive = false; else return isAlive = true;}
     public int Health;
     public int optionsAmount = 3;
+
+    private SpriteRenderer _spriteRenderer;
     private void Awake()
     {
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+        _sprite = _spriteRenderer.sprite;
         Testing = GameObject.Find("Scripts").GetComponent<Testing>();
         parent = parent ? parent : GameObject.Find("Canvas").GetComponent<Transform>();
         prefab = prefab ? prefab : Resources.Load("Prefabs/Ui/UiText") as GameObject;
         lineRenderer = lineRenderer ? lineRenderer : Instantiate((Resources.Load("Prefabs/Ui/DeafultTargetLineDrawer") as GameObject).GetComponent<LineRenderer>(),transform);
         SetState(new DraggingState(this));
-    }
-    void Start()
-    {
-        foreach(var kvp in Entetie.fields)
-        {
-            fields.Add(kvp.Key, kvp.Value);
-        } 
     }
     public int GetAtrtibuteValue(string attribute)
     {
@@ -81,18 +79,38 @@ public class EntetieScript : EntetieStateMachine
         var pos = Input.mousePosition;
         if (infoMenu == null)
         {
-            var offSettedPivot = new Vector2((pivot.x - 1) * (-1), pivot.y);
-            infoMenu = new DropList(prefab, parent, optionsAmount, offSettedPivot, 20);
-            infoMenu.SetPosition(pos);
-            InstntiateRemoveButton(2, "Remove");
-            InstantiateMoveButton(0, "Move");
-            InstantiateRollButton(1, "Roll");
+            InstantiateInfoMenu(pos);
+            DelegateButtons();
             EntetieSearchUI.DropListTracker.Add(infoMenu);
         }
-        if (infoMenu.IsActive())
-            infoMenu.EnableDisable();
-        if (!infoMenu.IsActive())
-            infoMenu.SetPosition(pos);
+        if (infoMenu.IsActive()) infoMenu.EnableDisable();
+        else infoMenu.SetPosition(pos);
+
+        //=== Internal Methods ===
+
+        void InstantiateInfoMenu(Vector3 position)
+        {
+            var offSettedPivot = new Vector2((pivot.x - 1) * (-1), pivot.y);
+            infoMenu = new DropList(prefab, parent, optionsAmount, offSettedPivot, 20);
+            infoMenu.SetPosition(position);
+        }
+        void DelegateButtons()
+        {
+            InstantiateButton(0, "Move", delegate
+            {
+                SetState(new WalkingState(this));
+            });
+            InstantiateButton(1, "Roll", delegate
+            {
+                //TODO: Roll Dice with entetie specific modifiers
+            });
+            InstantiateButton(2, "Remove", delegate
+            {
+                Destroy(gameObject); infoMenu.Destroy();
+            });
+        }
+
+        //=== Internal Methods ===
     }
     public void MoveEntetie(Vector3 position)
     {
@@ -139,32 +157,11 @@ public class EntetieScript : EntetieStateMachine
         if (x >= 0 && y >= 0 && Vector3.Distance(initPos, Testing.grid.GridArray[x, y].transform.position) / Testing.spacing <= range + offset)
             Testing.grid.GridArray[x, y].GetComponentInChildren<SpriteRenderer>().color = color;
     }
-    private void InstntiateRemoveButton(int index, string text)
+    private void InstantiateButton(int index, string text, Action action)
     {
         var buttonReference = infoMenu._Items[index];
         buttonReference.GetComponentInChildren<Text>().text = text;
-        infoMenu.AddListeners(delegate
-        {
-            Destroy(gameObject);
-            infoMenu.Destroy();
-        }, buttonReference);
-    }
-    private void InstantiateMoveButton(int index, string text)
-    {
-        var buttonReference = infoMenu._Items[index];
-        buttonReference.GetComponentInChildren<Text>().text = text;
-        infoMenu.AddListeners(delegate
-        {
-            SetState(new WalkingState(this));
-        },buttonReference);
-    }
-    private void InstantiateRollButton(int index, string text)
-    {
-        var buttonReference = infoMenu._Items[index];
-        buttonReference.GetComponentInChildren<Text>().text = text;
-        infoMenu.AddListeners(delegate
-        {
-        }, buttonReference);
+        infoMenu.AddListeners(action.Invoke,buttonReference);
     }
 
     public Action Result (bool result,Action OnSucess ,Action OnFaliure)

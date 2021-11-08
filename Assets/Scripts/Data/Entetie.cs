@@ -8,6 +8,7 @@ public enum EntetieListName
 public class Entetie : ScriptableObject
 {
     public Dictionary<string, string> fields; 
+    public Sprite _sprite = Resources.Load<Sprite>("SkeliBoi");
     public string GetName => fields["name"];
     public Entetie(List<string> fieldNames, List<string> fieldValues)
     {
@@ -31,8 +32,12 @@ public class Entetie : ScriptableObject
         Items[0] = GetName;
         GameObject gam = new GameObject(GetName, typeof(SpriteRenderer));
         SpriteRenderer spriteRenderer = gam.GetComponent<SpriteRenderer>();
-        spriteRenderer.sprite = Resources.Load<Sprite>("SkeliBoi");
+        spriteRenderer.sprite = _sprite;
         var entetieInstance = gam.AddComponent<EntetieScript>();
+        foreach (var kvp in fields)
+        {
+            entetieInstance.fields.Add(kvp.Key, kvp.Value);
+        }
         entetieInstance.Entetie = this;
         spriteRenderer.sortingOrder = 1;
         var col = gam.AddComponent<BoxCollider>();

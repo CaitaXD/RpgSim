@@ -26,7 +26,7 @@ public class IdleState : State
                 KeyCode.D,  delegate
                 {
                     if(currentTargetTransform != null) currentTargetEntetieScript = currentTargetTransform.GetComponent<EntetieScript>();
-                    if(currentTargetEntetieScript != null) entetieScript.AlterFieldValue(currentTargetEntetieScript, "HitPoints", -1);
+                    if(currentTargetEntetieScript != null) entetieScript.AlterTargetFieldValue(currentTargetEntetieScript, "HitPoints", -1);
                 }
             },
             { 

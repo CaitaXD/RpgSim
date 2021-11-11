@@ -177,11 +177,12 @@ public class EntetieScript : EntetieStateMachine
         if (f1 > f2) return true;
         else  return false;
     }
-    public void AlterFieldValue(EntetieScript target,string field,int value)
+    public void AlterTargetFieldValue(EntetieScript target,string field,int value)
     {
         int fieldValue = GetAtrtibuteValue(target, field);
         fieldValue = fieldValue + value;
         target.fields[field] = fieldValue.ToString();
+        Events.current.UpdateEntetie();
     }
     public Transform Target(EntetieScript entetie, Camera myCam)
     {

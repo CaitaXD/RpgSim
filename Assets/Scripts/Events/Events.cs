@@ -14,12 +14,8 @@ public class Events : MonoBehaviour
 
     public event Action onSelectionChange;
     public event Action onSelectionClearing;
-    public void SelectionChange() 
-    {
-        onSelectionChange?.Invoke();
-    }
-    public void ClearSelection()
-    {
-        onSelectionClearing?.Invoke();
-    }
+    public event Action onUpdateEntetie;
+    public void SelectionChange() => onSelectionChange?.Invoke();
+    public void ClearSelection() => onSelectionClearing?.Invoke();
+    public void UpdateEntetie() => onUpdateEntetie?.Invoke();
 }

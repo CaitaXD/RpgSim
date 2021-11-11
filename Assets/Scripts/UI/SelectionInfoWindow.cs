@@ -11,7 +11,6 @@ public class SelectionInfoWindow : MonoBehaviour
     Text _name;
     Text _hp;
 
-
     public void Awake()
     {
         UpdateSelectedEnteties();
@@ -20,6 +19,7 @@ public class SelectionInfoWindow : MonoBehaviour
     {
         Events.current.onSelectionChange += UpdateSelectedEnteties;
         Events.current.onSelectionClearing += ClearInfoWindows;
+        Events.current.onUpdateEntetie += UpdateDysplayedValue;
     }
     public void Update()
     {
@@ -36,10 +36,21 @@ public class SelectionInfoWindow : MonoBehaviour
             _name = window.GetComponentsInChildren<Text>()[0];
             _name.text = entetie.name;
             _hp = window.GetComponentsInChildren<Text>()[1];
-            _hp.text = entetie.fields["HitPoints"];
+            _hp.text = entetie.Health.ToString();
             Windows.Add(window);
         }
     }
+
+    void UpdateDysplayedValue()
+    {
+        for (int i = 0; i < SelectionScript.SelectedEnteties.Count; i++)
+        {
+            EntetieScript entetie = SelectionScript.SelectedEnteties[i];
+            _name.text = _name ? entetie.name : entetie.name;
+            _hp.text = _hp ? entetie.Health.ToString() : _hp.text;
+        }
+    }
+
     void ClearInfoWindows()
     {
         _image.sprite = WindowPrefab.GetComponentInChildren<Image>().sprite;
